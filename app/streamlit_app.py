@@ -1,6 +1,10 @@
 ﻿
 from pathlib import Path
 import json
+import os
+import shutil
+import tempfile
+from urllib.request import Request, urlopen
 
 import numpy as np
 import streamlit as st
@@ -13,7 +17,11 @@ from PIL import Image, UnidentifiedImageError
 APP_DIR = Path(__file__).resolve().parent
 ROOT = APP_DIR.parent
 
-MODEL_PATH = ROOT / "models" / "mobilenetv2_finetuned_best.keras"
+MODEL_FILENAME = "mobilenetv2_finetuned_best.keras"
+MODEL_PATH = Path(os.environ.get("MODEL_PATH", ROOT / "models" / MODEL_FILENAME))
+MODEL_URL = os.environ.get("MODEL_URL")
+MODEL_TOKEN = os.environ.get("MODEL_TOKEN")
+MODEL_CACHE_PATH = Path(tempfile.gettempdir()) / "brain-tumor-ai" / MODEL_FILENAME
 REPORT_PATH = ROOT / "reports" / "final_test_results.json"
 CM_PATH = ROOT / "reports" / "figures" / "final_test_confusion_matrix.png"
 
@@ -181,9 +189,38 @@ st.markdown(
 
 @st.cache_resource
 def get_model():
-    if not MODEL_PATH.exists():
-        raise FileNotFoundError(f"Model missing: {MODEL_PATH}")
-    return tf.keras.models.load_model(MODEL_PATH)
+    model_path = MODEL_PATH
+
+    if not model_path.is_file():
+        if not MODEL_URL:
+            raise FileNotFoundError(
+                f"Model missing: {MODEL_PATH}. Set MODEL_URL to a trusted model file URL."
+            )
+
+        MODEL_CACHE_PATH.parent.mkdir(parents=True, exist_ok=True)
+        if not MODEL_CACHE_PATH.is_file():
+            headers = {}
+            if MODEL_TOKEN:
+                headers["Authorization"] = f"Bearer {MODEL_TOKEN}"
+
+            request = Request(MODEL_URL, headers=headers)
+            download_path = MODEL_CACHE_PATH.with_name(
+                MODEL_CACHE_PATH.name + ".download"
+            )
+            try:
+                with urlopen(request, timeout=120) as response:
+                    with download_path.open("wb") as downloaded_model:
+                        shutil.copyfileobj(response, downloaded_model)
+                if download_path.stat().st_size == 0:
+                    raise ValueError("The downloaded model file is empty.")
+                download_path.replace(MODEL_CACHE_PATH)
+            except Exception:
+                download_path.unlink(missing_ok=True)
+                raise
+
+        model_path = MODEL_CACHE_PATH
+
+    return tf.keras.models.load_model(model_path)
 
 
 @st.cache_data

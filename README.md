@@ -102,7 +102,7 @@ The app resizes uploaded RGB images to **160 × 160** pixels for inference. Trai
 
 ### Requirements
 
-- Python 3.10 or a compatible version supported by the installed TensorFlow release
+- Python 3.11.11 (pinned for the Render deployment)
 - pip
 - The MRI dataset for notebook workflows
 - A trained model checkpoint for app inference
@@ -136,6 +136,24 @@ python -m streamlit run app/streamlit_app.py
 
 Open the local address printed by Streamlit, typically `http://localhost:8501`.
 
+## Deploy on Render
+
+The repository includes a [`render.yaml`](render.yaml) Blueprint and a [`.python-version`](.python-version) pin. The service runs Streamlit on Render's assigned `$PORT`. The TensorFlow dependency is pinned to **2.21.0**, matching the version installed in the current project environment.
+
+### Provide the model outside GitHub
+
+The `.keras` checkpoint is **18.37 MB** and remains excluded from Git. The app can load it from the local `models/` folder during development or download it from a trusted model host in Render:
+
+1. Host `mobilenetv2_finetuned_best.keras` with a provider that serves the raw file over HTTPS.
+2. In Render, add `MODEL_URL` with the direct file URL. For a private model host that uses bearer tokens, add `MODEL_TOKEN` as a secret environment variable. Never commit a token or put credentials in the URL.
+3. Deploy the Blueprint from this repository's `main` branch. Render installs `requirements.txt` and starts the app using the commands in `render.yaml`.
+
+The app downloads the checkpoint on first model use and stores it under the temporary directory. Render's filesystem is ephemeral, so the file is downloaded again after a new instance starts. Without `MODEL_URL` (and `MODEL_TOKEN` when required), the dashboard can show saved reports, but MRI inference will not work on Render because the model is not in the repository.
+
+The Blueprint uses Render's **Free** plan to avoid selecting a paid service automatically. Free web services have 512 MB of RAM and can spin down when idle; TensorFlow may exceed that memory during startup or inference. If the service fails with an out-of-memory error, choose a higher-memory plan in Render. See [Render's compute plans](https://render.com/docs/compute-plans) and [free service limitations](https://render.com/docs/free).
+
+For setup details, see Render's [Web Services guide](https://render.com/docs/web-services), [Python version configuration](https://render.com/docs/python-version), and [Blueprint documentation](https://render.com/docs/infrastructure-as-code).
+
 ## Training and evaluation workflow
 
 The notebooks cover the project lifecycle:
@@ -163,6 +181,8 @@ Brain-Tumor-AI/
 │   ├── 04_Transfer_Learning.ipynb
 │   └── 05_Model_Evaluation.ipynb
 ├── reports/                 # summaries, metrics, and figures
+├── render.yaml              # Render web-service configuration
+├── .python-version          # Python runtime pin
 ├── requirements.txt
 └── README.md
 ```

@@ -1,6 +1,6 @@
 
 # Deep Learning
-tensorflow
+tensorflow==2.21.0
 
 # Data Processing
 numpy
