@@ -1,0 +1,13 @@
+{
+  "model": "MobileNetV2 Fine-tuned",
+  "test_images": 246,
+  "test_accuracy": 0.8617886178861789,
+  "test_macro_f1": 0.8576712876566249,
+  "test_macro_recall": 0.8621740362811792,
+  "classes": [
+    "glioma",
+    "meningioma",
+    "no_tumor",
+    "pituitary"
+  ]
+}

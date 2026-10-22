@@ -1,0 +1,22 @@
+
+# Deep Learning
+tensorflow
+
+# Data Processing
+numpy
+pandas
+Pillow
+
+# Visualization
+matplotlib
+seaborn
+
+# Machine Learning and Evaluation
+scikit-learn
+
+# Jupyter Notebook
+jupyter
+ipykernel
+
+# Web Application
+streamlit

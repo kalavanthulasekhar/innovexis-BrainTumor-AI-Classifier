@@ -1,0 +1,2 @@
+model,validation_accuracy,macro_f1,macro_recall,meningioma_recall
+MobileNetV2 Frozen,0.8725099601593626,0.8623093649738749,0.8641201890675945,0.6693548387096774

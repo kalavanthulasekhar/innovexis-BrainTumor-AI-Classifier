@@ -1,0 +1,8 @@
+{
+  "model": "MobileNetV2",
+  "validation_accuracy": 0.8725099601593626,
+  "validation_macro_f1": 0.8623093649738749,
+  "validation_macro_precision": 0.8795923910483272,
+  "validation_macro_recall": 0.8641201890675945,
+  "parameters": 2263108
+}

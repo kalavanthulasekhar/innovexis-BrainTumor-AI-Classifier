@@ -1,0 +1,13 @@
+split,class,class_label,image_count
+train,glioma,Glioma,564
+train,meningioma,Meningioma,358
+train,no_tumor,No Tumor,335
+train,pituitary,Pituitary,438
+valid,glioma,Glioma,161
+valid,meningioma,Meningioma,124
+valid,no_tumor,No Tumor,99
+valid,pituitary,Pituitary,118
+test,glioma,Glioma,80
+test,meningioma,Meningioma,63
+test,no_tumor,No Tumor,49
+test,pituitary,Pituitary,54

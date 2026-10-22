@@ -1,0 +1,72 @@
+
+# ==========================================
+# BrainTumor AI - Git Ignore
+# ==========================================
+
+# Datasets - keep MRI images locally
+dataset/
+data/
+*.zip
+
+# Trained models - do not upload large files
+models/
+*.keras
+*.h5
+*.hdf5
+*.weights.h5
+*.joblib
+*.pkl
+*.onnx
+*.tflite
+
+# Python virtual environments
+.venv/
+venv/
+env/
+
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Local secrets and environment variables
+.env
+.env.*
+!.env.example
+.streamlit/secrets.toml
+
+# IDE and operating system files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs and temporary files
+*.log
+*.tmp
+temp/
+tmp/
+
+# Build and distribution artifacts
+build/
+dist/
+*.egg-info/
+
+# Keep reports and project documentation
+!reports/
+!reports/**/*.csv
+!reports/**/*.json
+!reports/**/*.png
+!reports/**/*.jpg
+!reports/**/*.jpeg
+
+# Keep dependency and project files
+!requirements.txt
+!README.md
+!.gitignore
