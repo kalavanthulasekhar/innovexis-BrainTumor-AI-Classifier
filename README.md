@@ -45,7 +45,7 @@ The app includes these sections:
 - **Model Insights:** recorded test metrics and the confusion matrix, when the report files are available.
 - **About:** model configuration and project workflow.
 
-The app expects the trained checkpoint at `models/mobilenetv2_finetuned_best.keras`. Model files are excluded from Git by the repository's `.gitignore`; add a checkpoint from your own training run before using inference.
+The app uses `models/mobilenetv2_finetuned_best.keras` for inference. The trained `.keras` checkpoints are included in this repository; the MRI image dataset remains excluded.
 
 ## Evaluation snapshot
 
@@ -123,8 +123,8 @@ On macOS/Linux, activate the environment with `source .venv/bin/activate`.
 ### 2. Prepare local data and model
 
 - Arrange MRI images under `dataset/train`, `dataset/valid`, and `dataset/test`, with one folder per class.
-- Place your trained checkpoint at `models/mobilenetv2_finetuned_best.keras`.
-- The dataset and model weights are intentionally ignored by Git; they are not included in a fresh clone.
+- The trained checkpoints are included in `models/` in this repository.
+- Arrange MRI images under `dataset/` only if you plan to run the training and analysis notebooks. The dataset is excluded from Git.
 
 ### 3. Launch the dashboard
 
@@ -140,15 +140,18 @@ Open the local address printed by Streamlit, typically `http://localhost:8501`.
 
 The repository includes a [`render.yaml`](render.yaml) Blueprint and a [`.python-version`](.python-version) pin. The service runs Streamlit on Render's assigned `$PORT`. The TensorFlow dependency is pinned to **2.21.0**, matching the version installed in the current project environment.
 
-### Provide the model outside GitHub
+### Model checkpoint
 
-The `.keras` checkpoint is **18.37 MB** and remains excluded from Git. The app can load it from the local `models/` folder during development or download it from a trusted model host in Render:
+The repository includes these `.keras` checkpoints in `models/` (about **31.3 MiB total**):
 
-1. Host `mobilenetv2_finetuned_best.keras` with a provider that serves the raw file over HTTPS.
-2. In Render, add `MODEL_URL` with the direct file URL. For a private model host that uses bearer tokens, add `MODEL_TOKEN` as a secret environment variable. Never commit a token or put credentials in the URL.
-3. Deploy the Blueprint from this repository's `main` branch. Render installs `requirements.txt` and starts the app using the commands in `render.yaml`.
+```text
+models/
+├── custom_cnn_best.keras
+├── mobilenetv2_best.keras
+└── mobilenetv2_finetuned_best.keras
+```
 
-The app downloads the checkpoint on first model use and stores it under the temporary directory. Render's filesystem is ephemeral, so the file is downloaded again after a new instance starts. Without `MODEL_URL` (and `MODEL_TOKEN` when required), the dashboard can show saved reports, but MRI inference will not work on Render because the model is not in the repository.
+Render receives the inference checkpoint with the repository and does not need model-hosting environment variables. The app still supports an optional `MODEL_URL` and bearer-token `MODEL_TOKEN` if you later move the checkpoint to external storage. Never put credentials in source code or in a URL.
 
 The Blueprint uses Render's **Free** plan to avoid selecting a paid service automatically. Free web services have 512 MB of RAM and can spin down when idle; TensorFlow may exceed that memory during startup or inference. If the service fails with an out-of-memory error, choose a higher-memory plan in Render. See [Render's compute plans](https://render.com/docs/compute-plans) and [free service limitations](https://render.com/docs/free).
 
@@ -173,7 +176,10 @@ Brain-Tumor-AI/
 ├── app/
 │   └── streamlit_app.py
 ├── dataset/                 # local data; excluded from Git
-├── models/                  # local checkpoints; excluded from Git
+├── models/                  # trained .keras checkpoints, included in Git
+│   ├── custom_cnn_best.keras
+│   ├── mobilenetv2_best.keras
+│   └── mobilenetv2_finetuned_best.keras
 ├── notebooks/
 │   ├── 01_Dataset_Analysis.ipynb
 │   ├── 02_Data_Preprocessing.ipynb

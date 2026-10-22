@@ -8,9 +8,8 @@ dataset/
 data/
 *.zip
 
-# Trained models - do not upload large files
-models/
-*.keras
+# Trained .keras checkpoints in models/ are versioned with this project.
+# Ignore other model and weight formats.
 *.h5
 *.hdf5
 *.weights.h5
